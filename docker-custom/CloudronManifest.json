@@ -1,0 +1,19 @@
+{
+  "id": "com.cplnr.nodered",
+  "title": "Node-RED",
+  "author": "OpenJS Foundation",
+  "description": "Node-RED",
+  "tagline": "Low-code programming for event-driven applications",
+  "version": "1.2.9",
+  "healthCheckPath": "/nr-admin",
+  "httpPort": 1880,
+  "addons": {
+    "localstorage": {}
+  },
+  "manifestVersion": 2,
+  "website": "https://github.com/node-red/node-red-docker",
+  "contactEmail": "jason@staypath.com",
+  "tags": [ "automation" ],
+  "icon": "file://node-red-icon-2.png",
+  "postInstallMessage": "file://POSTINSTALL.md"
+}
