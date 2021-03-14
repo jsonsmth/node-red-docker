@@ -1,6 +1,7 @@
 ARG ARCH=amd64
 ARG NODE_VERSION=12
 ARG OS=buster-slim
+ARG NODE_RED_VERSION=1.2.9
 
 #### Stage BASE ########################################################################################################
 FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
@@ -59,7 +60,7 @@ ARG ARCH
 ARG TAG_SUFFIX=default
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
-    org.label-schema.docker.dockerfile=".docker/Dockerfile.debian" \
+    org.label-schema.docker.dockerfile=".docker/Dockerfile.cloudron" \
     org.label-schema.license="Apache-2.0" \
     org.label-schema.name="Node-RED" \
     org.label-schema.version=${BUILD_VERSION} \
