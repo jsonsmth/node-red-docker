@@ -1,6 +1,7 @@
 ARG ARCH=amd64
 ARG NODE_VERSION=12
 ARG OS=buster-slim
+ARG NODE_RED_VERSION=1.2.9
 
 #### Stage BASE ########################################################################################################
 FROM ${ARCH}/node:${NODE_VERSION}-${OS} AS base
@@ -19,26 +20,26 @@ RUN set -ex && \
         git \
         openssl \
         openssh-client && \
-    mkdir -p /app/data/node-red/default /app/data/data && \
+    mkdir -p /app/code/node-red /app/data/default && \
     deluser --remove-home node && \
     # adduser --home /usr/src/node-red --disabled-password --no-create-home node-red --uid 1000 && \
-    useradd --home-dir /app/data/node-red --uid 1000 node-red && \
-    chown -R node-red:root /app/data/data && chmod -R g+rwX /app/data/data && \ 
-    chown -R node-red:root /app/data/node-red && chmod -R g+rwX /app/data/node-red
+    useradd --home-dir /app/code/node-red --uid 1000 node-red && \
+    chown -R node-red:root /app/data && chmod -R g+rwX /app/data && \ 
+    chown -R node-red:root /app/code/node-red && chmod -R g+rwX /app/code/node-red
     # chown -R node-red:node-red /data && \
     # chown -R node-red:node-red /usr/src/node-red
 
 # Set work directory
 #WORKDIR /usr/src/node-red
-WORKDIR /app/data/node-red
+WORKDIR /app/code/node-red
 
 # package.json contains Node-RED NPM module and node dependencies
 # copy user settings to set admin path of nr-admin and default admin password
-COPY settings.js /app/data/data
+COPY settings.js /app/data
 COPY package.json .
 COPY create_pass.sh .
-COPY flows.json /app/data/data
-COPY index.html /app/data/node-red/default
+COPY flows.json /app/data
+COPY index.html /app/data/default
 
 #### Stage BUILD #######################################################################################################
 FROM base AS build
@@ -59,7 +60,7 @@ ARG ARCH
 ARG TAG_SUFFIX=default
 
 LABEL org.label-schema.build-date=${BUILD_DATE} \
-    org.label-schema.docker.dockerfile=".docker/Dockerfile.debian" \
+    org.label-schema.docker.dockerfile=".docker/Dockerfile.cloudron" \
     org.label-schema.license="Apache-2.0" \
     org.label-schema.name="Node-RED" \
     org.label-schema.version=${BUILD_VERSION} \
@@ -71,10 +72,10 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.arch=${ARCH} \
     authors="Dave Conway-Jones, Nick O'Leary, James Thomas, Raymond Mouthaan"
 
-COPY --from=build /app/data/node-red/prod_node_modules ./node_modules
+COPY --from=build /app/code/node-red/prod_node_modules ./node_modules
 
 # Chown, install devtools & Clean up
-RUN chown -R node-red:root /app/data/node-red && \
+RUN chown -R node-red:root /app/code/node-red && \
     apt-get update && apt-get install -y build-essential python-dev python3 && \
     rm -r /tmp/*
 
@@ -82,7 +83,7 @@ USER node-red
 
 # Env variables
 ENV NODE_RED_VERSION=$NODE_RED_VERSION \
-    NODE_PATH=/app/data/node-red/node_modules:/app/data/data/node_modules \
+    NODE_PATH=/app/code/node-red/node_modules:/app/data/node_modules \
     FLOWS=flows.json
 
 
@@ -95,4 +96,4 @@ EXPOSE 1880
 # Add a healthcheck (default every 30 secs)
 # HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
 
-ENTRYPOINT ["npm", "start", "--cache", "/app/data/data/.npm", "--", "--userDir", "/app/data/data"]
+ENTRYPOINT ["npm", "start", "--cache", "/app/data/.npm", "--", "--userDir", "/app/data"]
