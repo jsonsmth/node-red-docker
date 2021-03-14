@@ -1,3 +1,4 @@
+# NOTE: This is Node-RED Docker forked and configured to work as an app in Cloudron.io
 # Node-RED Docker
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-red/node-red-docker.svg)](https://greenkeeper.io/)
