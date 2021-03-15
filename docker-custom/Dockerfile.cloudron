@@ -20,25 +20,16 @@ RUN set -ex && \
         git \
         openssl \
         openssh-client && \
-    mkdir -p /app/code/node-red /app/data/default && \
+    mkdir -p /app/code/node-red && \
     deluser --remove-home node && \
-    # adduser --home /usr/src/node-red --disabled-password --no-create-home node-red --uid 1000 && \
     useradd --home-dir /app/code/node-red --uid 1000 node-red && \
-    chown -R node-red:root /app/data && chmod -R g+rwX /app/data && \ 
     chown -R node-red:root /app/code/node-red && chmod -R g+rwX /app/code/node-red
-    # chown -R node-red:node-red /data && \
-    # chown -R node-red:node-red /usr/src/node-red
 
 # Set work directory
-#WORKDIR /usr/src/node-red
 WORKDIR /app/code/node-red
 
 # package.json contains Node-RED NPM module and node dependencies
-# copy user settings to set admin path of nr-admin and default admin password
-COPY settings.js /app/data
 COPY package.json .
-COPY flows.json /app/data
-COPY index.html /app/data/default
 
 #### Stage BUILD #######################################################################################################
 FROM base AS build
@@ -93,7 +84,7 @@ ENV NODE_RED_VERSION=$NODE_RED_VERSION \
 # Expose the listening port of node-red
 EXPOSE 1880
 
-# Add a healthcheck (default every 30 secs)
-# HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
+COPY start.sh /app/code/
 
-ENTRYPOINT ["npm", "start", "--cache", "/app/data/.npm", "--", "--userDir", "/app/data"]
+USER root
+CMD [ "/app/code/start.sh" ]
