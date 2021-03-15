@@ -1,4 +1,4 @@
-[[ ! -d /app/data/default ]]; then
+if [[ ! -d /app/data/default ]]; then
     # this is first install, so setup /app/data and initial settings
     mkdir -p /app/data/default
     chown -R node-red:root /app/data && chmod -R g+rwX /app/data
