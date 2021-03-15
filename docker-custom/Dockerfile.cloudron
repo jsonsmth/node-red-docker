@@ -37,7 +37,6 @@ WORKDIR /app/code/node-red
 # copy user settings to set admin path of nr-admin and default admin password
 COPY settings.js /app/data
 COPY package.json .
-COPY create_pass.sh .
 COPY flows.json /app/data
 COPY index.html /app/data/default
 
