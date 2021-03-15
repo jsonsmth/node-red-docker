@@ -13,4 +13,4 @@ docker build --rm --no-cache \
     --build-arg BUILD_DATE="$(date +"%Y-%m-%dT%H:%M:%SZ")" \
     --build-arg TAG_SUFFIX=default \
     --file Dockerfile.cloudron \
-    --tag jsonsmth/node-red-cloudron-dev .
+    --tag jsonsmth/node-red-cloudron-ldap .
