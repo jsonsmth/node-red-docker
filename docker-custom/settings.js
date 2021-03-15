@@ -126,9 +126,12 @@ module.exports = {
     //},
 
 adminAuth: require('node-red-contrib-ldap-auth').setup({
-  uri:process.env.CLOUDRON_LDAP_URL,,
+  uri: process.env.CLOUDRON_LDAP_URL,
   base: process.env.CLOUDRON_LDAP_USERS_BASE_DN,
-  filterTemplate: '(&(objectclass=user)(|(username=%uid)(mail=%uid)))'
+  filterTemplate: '(&(objectclass=user)(|(username={{username}})(mail={{username}})))', 
+  bind_dn: process.env.CLOUDRON_LDAP_BIND_DN,
+  bind_pw: process.env.CLOUDRON_LDAP_BIND_PASSWORD,
+  no_verify_ssl: true
 }),
 
 //    adminAuth: {
