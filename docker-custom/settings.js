@@ -125,14 +125,23 @@ module.exports = {
     //    }]
     //},
 
-    adminAuth: {
-        type: "credentials",
-        users: [{
-            username: "admin",
-            password: "$2a$08$a8MjXsyAjLAG/yOFv7zNf.Tkn9vcKr7tS/c9mw4rzlymwHlGsYIou",
-            permissions: "*"
-        }]
-    },
+adminAuth: require('node-red-contrib-ldap-auth').setup({
+  uri: process.env.CLOUDRON_LDAP_URL,
+  base: process.env.CLOUDRON_LDAP_USERS_BASE_DN,
+  filterTemplate: '(&(objectclass=user)(|(username={{username}})(mail={{username}})))', 
+  bind_dn: process.env.CLOUDRON_LDAP_BIND_DN,
+  bind_pw: process.env.CLOUDRON_LDAP_BIND_PASSWORD,
+  no_verify_ssl: true
+}),
+
+//    adminAuth: {
+//        type: "credentials",
+//        users: [{
+//            username: "admin",
+//            password: "$2a$08$a8MjXsyAjLAG/yOFv7zNf.Tkn9vcKr7tS/c9mw4rzlymwHlGsYIou",
+//            permissions: "*"
+//        }]
+//    },
 
     // To password protect the node-defined HTTP endpoints (httpNodeRoot), or
     // the static content (httpStatic), the following properties can be used.

@@ -8,7 +8,8 @@
   "healthCheckPath": "/nr-admin",
   "httpPort": 1880,
   "addons": {
-    "localstorage": {}
+    "localstorage": {},
+    "ldap": {}
   },
   "manifestVersion": 2,
   "website": "https://github.com/node-red/node-red-docker",
