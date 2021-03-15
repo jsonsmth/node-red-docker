@@ -8,4 +8,4 @@ if [[ ! -d /app/data/default ]]; then
 fi
 
 echo "Starting Node-Red"
-exec /usr/loca/bin/gosu node-red:root npm start --cache /app/data/.npm --userDir /app/data
+exec /usr/local/bin/gosu node-red:root npm start --cache /app/data/.npm --userDir /app/data
