@@ -20,25 +20,20 @@ RUN set -ex && \
         git \
         openssl \
         openssh-client && \
-    mkdir -p /app/code/node-red /app/data/default && \
+    mkdir -p /app/code && \
     deluser --remove-home node && \
-    # adduser --home /usr/src/node-red --disabled-password --no-create-home node-red --uid 1000 && \
-    useradd --home-dir /app/code/node-red --uid 1000 node-red && \
-    chown -R node-red:root /app/data && chmod -R g+rwX /app/data && \ 
-    chown -R node-red:root /app/code/node-red && chmod -R g+rwX /app/code/node-red
-    # chown -R node-red:node-red /data && \
-    # chown -R node-red:node-red /usr/src/node-red
+    useradd --home-dir /app/code --uid 1000 node-red && \
+    chown -R node-red:root /app/code && chmod -R g+rwX /app/code
 
 # Set work directory
-#WORKDIR /usr/src/node-red
-WORKDIR /app/code/node-red
+WORKDIR /app/code
 
 # package.json contains Node-RED NPM module and node dependencies
-# copy user settings to set admin path of nr-admin and default admin password
-COPY settings.js /app/data
 COPY package.json .
-COPY flows.json /app/data
-COPY index.html /app/data/default
+COPY settings.js .
+COPY package.json .
+COPY flows.json .
+COPY index.html .
 
 #### Stage BUILD #######################################################################################################
 FROM base AS build
@@ -72,28 +67,25 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
     org.label-schema.arch=${ARCH} \
     authors="Dave Conway-Jones, Nick O'Leary, James Thomas, Raymond Mouthaan"
 
-COPY --from=build /app/code/node-red/prod_node_modules ./node_modules
+COPY --from=build /app/code/prod_node_modules ./node_modules
 
 # Chown, install devtools & Clean up
-RUN chown -R node-red:root /app/code/node-red && \
-    apt-get update && apt-get install -y build-essential python-dev python3 && \
+RUN chown -R node-red:root /app/code && \
+    apt-get update && apt-get install -y build-essential python-dev python3 gosu && \
     rm -r /tmp/*
 
 USER node-red
 
 # Env variables
 ENV NODE_RED_VERSION=$NODE_RED_VERSION \
-    NODE_PATH=/app/code/node-red/node_modules:/app/data/node_modules \
-    FLOWS=flows.json
-
-
-# ENV NODE_RED_ENABLE_SAFE_MODE=true    # Uncomment to enable safe start mode (flows not running)
-# ENV NODE_RED_ENABLE_PROJECTS=true     # Uncomment to enable projects option
+    NODE_PATH=/app/code/node_modules:/app/data/node_modules \
+    FLOWS=/app/data/flows.json
 
 # Expose the listening port of node-red
 EXPOSE 1880
 
-# Add a healthcheck (default every 30 secs)
-# HEALTHCHECK CMD curl http://localhost:1880/ || exit 1
+COPY start.sh /app/code/
 
-ENTRYPOINT ["npm", "start", "--cache", "/app/data/.npm", "--", "--userDir", "/app/data"]
+USER root
+
+CMD [ "/app/code/start.sh" ]
