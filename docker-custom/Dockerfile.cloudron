@@ -70,6 +70,8 @@ RUN chown -R node-red:root /app/code/node-red && \
     apt-get update && apt-get install -y build-essential python-dev python3 && \
     rm -r /tmp/*
 
+RUN apt-get install -y gosu
+
 USER node-red
 
 # Env variables
